@@ -73,8 +73,10 @@ def debug_hf():
     import requests as r
     urls = [
         "https://router.huggingface.co/hf-inference/models/facebook/musicgen-small",
-        "https://api-inference.huggingface.co/models/facebook/musicgen-small",
-        "https://router.huggingface.co/hf-inference/v2/models/facebook/musicgen-small",
+        "https://router.huggingface.co/v1/models/facebook/musicgen-small",
+        "https://router.huggingface.co/models/facebook/musicgen-small",
+        "https://router.huggingface.co/api/models/facebook/musicgen-small/generate",
+        "https://router.huggingface.co/hf-inference/pipeline/text-to-audio/facebook/musicgen-small",
     ]
     results = {}
     for url in urls:

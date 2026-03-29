@@ -71,19 +71,27 @@ def generate(req: GenerateRequest):
 @app.get("/api/debug-hf")
 def debug_hf():
     import requests as r
-    urls = [
-        "https://router.huggingface.co/hf-inference/models/facebook/musicgen-small",
-        "https://router.huggingface.co/hf-inference/models/suno/bark-small",
-        "https://router.huggingface.co/hf-inference/models/suno/bark",
-        "https://router.huggingface.co/hf-inference/models/facebook/musicgen-medium",
-    ]
+    # Test a simple text model that definitely works on free tier
+    urls = {
+        "text_model": "https://router.huggingface.co/hf-inference/models/gpt2",
+        "musicgen_text_to_audio": "https://router.huggingface.co/hf-inference/v1/audio/generations",
+    }
     results = {}
-    for url in urls:
-        try:
-            resp = r.post(url, headers={"Authorization": f"Bearer {HF_TOKEN}", "Content-Type": "application/json"}, json={"inputs": "test"}, timeout=30)
-            results[url] = {"status": resp.status_code, "body": resp.text[:200]}
-        except Exception as e:
-            results[url] = {"status": "error", "body": str(e)}
+
+    # Test 1: simple text model
+    try:
+        resp = r.post(urls["text_model"], headers={"Authorization": f"Bearer {HF_TOKEN}"}, json={"inputs": "hello"}, timeout=30)
+        results["text_model"] = {"status": resp.status_code, "body": resp.text[:300]}
+    except Exception as e:
+        results["text_model"] = {"error": str(e)}
+
+    # Test 2: audio generation endpoint
+    try:
+        resp = r.post(urls["musicgen_text_to_audio"], headers={"Authorization": f"Bearer {HF_TOKEN}"}, json={"model": "facebook/musicgen-small", "inputs": "rock guitar"}, timeout=30)
+        results["audio_gen"] = {"status": resp.status_code, "body": resp.text[:300]}
+    except Exception as e:
+        results["audio_gen"] = {"error": str(e)}
+
     return results
 
 

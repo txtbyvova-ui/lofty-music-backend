@@ -68,6 +68,24 @@ def generate(req: GenerateRequest):
     )
 
 
+@app.get("/api/debug-hf")
+def debug_hf():
+    import requests as r
+    urls = [
+        "https://router.huggingface.co/hf-inference/models/facebook/musicgen-small",
+        "https://api-inference.huggingface.co/models/facebook/musicgen-small",
+        "https://router.huggingface.co/hf-inference/v2/models/facebook/musicgen-small",
+    ]
+    results = {}
+    for url in urls:
+        try:
+            resp = r.post(url, headers={"Authorization": f"Bearer {HF_TOKEN}", "Content-Type": "application/json"}, json={"inputs": "test"}, timeout=30)
+            results[url] = {"status": resp.status_code, "body": resp.text[:200]}
+        except Exception as e:
+            results[url] = {"status": "error", "body": str(e)}
+    return results
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}

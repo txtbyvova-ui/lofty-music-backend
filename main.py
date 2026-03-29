@@ -73,10 +73,9 @@ def debug_hf():
     import requests as r
     urls = [
         "https://router.huggingface.co/hf-inference/models/facebook/musicgen-small",
-        "https://router.huggingface.co/v1/models/facebook/musicgen-small",
-        "https://router.huggingface.co/models/facebook/musicgen-small",
-        "https://router.huggingface.co/api/models/facebook/musicgen-small/generate",
-        "https://router.huggingface.co/hf-inference/pipeline/text-to-audio/facebook/musicgen-small",
+        "https://router.huggingface.co/hf-inference/models/suno/bark-small",
+        "https://router.huggingface.co/hf-inference/models/suno/bark",
+        "https://router.huggingface.co/hf-inference/models/facebook/musicgen-medium",
     ]
     results = {}
     for url in urls:
@@ -85,6 +84,25 @@ def debug_hf():
             results[url] = {"status": resp.status_code, "body": resp.text[:200]}
         except Exception as e:
             results[url] = {"status": "error", "body": str(e)}
+    return results
+
+
+@app.get("/api/debug-hf2")
+def debug_hf2():
+    import requests as r
+    url = "https://router.huggingface.co/hf-inference/models/facebook/musicgen-small"
+    payloads = [
+        {"inputs": "rock guitar"},
+        {"inputs": "rock guitar", "parameters": {"max_new_tokens": 256}},
+        "rock guitar",
+    ]
+    results = {}
+    for i, p in enumerate(payloads):
+        try:
+            resp = r.post(url, headers={"Authorization": f"Bearer {HF_TOKEN}", "Content-Type": "application/json"}, json=p if isinstance(p, dict) else None, data=p if isinstance(p, str) else None, timeout=30)
+            results[f"payload_{i}"] = {"status": resp.status_code, "body": resp.text[:300]}
+        except Exception as e:
+            results[f"payload_{i}"] = {"status": "error", "body": str(e)}
     return results
 
 

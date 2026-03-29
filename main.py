@@ -88,6 +88,18 @@ def debug_hf():
     return results
 
 
+@app.get("/api/debug-token")
+def debug_token():
+    token = os.environ.get("HF_TOKEN")
+    if not token:
+        return {"error": "HF_TOKEN not set"}
+    return {
+        "length": len(token),
+        "starts_with": token[:4],
+        "ends_with": token[-4:]
+    }
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}

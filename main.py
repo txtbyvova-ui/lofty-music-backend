@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-HF_API_URL = "https://router.huggingface.co/hf-inference/models/facebook/musicgen-small"
+HF_API_URL = "https://router.huggingface.co/hf-inference/v2/models/facebook/musicgen-small"
 HF_TOKEN = os.environ.get("HF_TOKEN")
 
 GENRE_PROMPTS = {
